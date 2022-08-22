@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row, Card, Form, Input, Button, Spin } from "antd";
+import { Col, Row, Card, Form, Input, Button } from "antd";
 import logoIT from "../../assets/logo.svg";
 import { useDispatch, useSelector } from "react-redux";
 import "./style.less";
@@ -19,7 +19,7 @@ const LoginPage = () => {
   const loginSubmit = (e) => {
     e.preventDefault();
 
-    if (form.username == "" || form.password == "")
+    if (form.username === "" || form.password === "")
       return MessageComp("Please Fill Form", "warning");
     dispatch(setToken(form));
   };

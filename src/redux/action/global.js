@@ -1,5 +1,4 @@
 import axios from "axios";
-import { message } from "antd";
 import { endPoint } from "../../assets/config";
 import Cookies from "universal-cookie";
 import { MessageComp } from "../../components";
@@ -28,9 +27,8 @@ export const setToken = (form) => (dispatch) => {
   dispatch({ type: "SET_LOADING", value: true });
 
   (async () => {
-    let apiRes = null;
     try {
-      apiRes = await axios
+      await axios
         .post(`${URL}`, {
           username: form.username.target.value,
           password: form.password.target.value,
@@ -49,12 +47,18 @@ export const setToken = (form) => (dispatch) => {
           }, 2000);
         })
         .catch((error) => {
-          MessageComp(error.response.data.message, "error");
+          if (error.response?.data?.message === undefined) {
+            MessageComp("something went wrong");
+            dispatch({ type: "SET_LOADING", value: false });
+            return;
+          }
+          MessageComp(error.response?.data?.message, "error");
           // alert(error.response.data.message);
           dispatch({ type: "SET_LOADING", value: false });
         });
     } catch (err) {
       console.log(err);
+      MessageComp("something went wrong");
       dispatch({ type: "SET_LOADING", value: false });
     }
   })();

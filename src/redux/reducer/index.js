@@ -5,7 +5,7 @@ import { departementReducer } from "./departement";
 import { carsReducer } from "./cars";
 import { userReducer } from "./user";
 import { locationReducer } from "./location";
-
+import { reportReducer } from "./report";
 const reducer = combineReducers({
   globalReducer,
   areaReducer,
@@ -13,6 +13,7 @@ const reducer = combineReducers({
   carsReducer,
   userReducer,
   locationReducer,
+  reportReducer,
 });
 
 export default reducer;

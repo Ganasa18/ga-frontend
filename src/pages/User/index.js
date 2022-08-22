@@ -1,13 +1,4 @@
-import {
-  Breadcrumb,
-  Col,
-  Form,
-  Input,
-  Popconfirm,
-  Row,
-  Skeleton,
-  Tabs,
-} from "antd";
+import { Breadcrumb, Col, Form, Input, Popconfirm, Row, Skeleton } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -23,26 +14,20 @@ import {
 import Select from "react-select";
 
 import {
+  accessUserMenuList,
   createDataUser,
-  getDataArea,
-  getDataCars,
-  getDataDepartement,
+  filterUser,
   getDataUsers,
   searchUser,
-  filterUser,
-  accessUserMenuList,
-  updateUser,
   updateCarUser,
+  updateUser,
 } from "../../redux/action";
 
 import useFormUser from "../../utils/useFormUser";
 
-import { CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
-
 import "./style.less";
 const { TextArea } = Input;
-const { Option } = Select;
-const { TabPane } = Tabs;
+
 const User = () => {
   const { globalReducer, userReducer } = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -135,7 +120,7 @@ const User = () => {
           <Popconfirm
             title="Sure to edit?"
             onConfirm={() => handleEdit(record)}>
-            <a className="edit-hover">Edit</a>
+            <div className="edit-hover">Edit</div>
           </Popconfirm>
         ) : null,
     },
@@ -147,7 +132,7 @@ const User = () => {
       value: [],
     });
     dispatch(accessUserMenuList(record.key));
-    if (type == true) {
+    if (type === true) {
       setCarDefault({
         plate_car: record.plate_car,
         model_vehicle: record.model_vehicle,
@@ -181,7 +166,7 @@ const User = () => {
 
   useEffect(() => {
     dispatch(getDataUsers());
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

@@ -12,14 +12,10 @@ const authToken = cookies.get("token");
 function App() {
   return (
     <>
-      {/* <BrowserRouter>
-        <Router />
-      </BrowserRouter> */}
       <Provider store={store}>
         {!authToken ? <LoginPage /> : <Sidebar />}
         {/* {isLoadingPage && <Loading />} */}
       </Provider>
-      {/* <LoginPage /> */}
     </>
   );
 }

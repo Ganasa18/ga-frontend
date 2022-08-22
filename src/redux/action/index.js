@@ -4,3 +4,4 @@ export * from "./departement";
 export * from "./cars";
 export * from "./user";
 export * from "./location";
+export * from "./report";

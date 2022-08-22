@@ -65,3 +65,16 @@ export const createNewlocation = (name, select) => async (dispatch) => {
       MessageComp("Something Wrong", "warning");
     });
 };
+
+export const searchLocation = (value, locationData) => async (dispatch) => {
+  dispatch({ type: "SET_LOADING", value: true });
+  setTimeout(() => {
+    if (value.length <= 0) {
+      dispatch(getDataLocation());
+      return;
+    }
+    let searchRequest = filterByValue(locationData, value);
+    dispatch({ type: "SET_LOCATION", value: searchRequest });
+    dispatch({ type: "SET_LOADING", value: false });
+  }, 3000);
+};

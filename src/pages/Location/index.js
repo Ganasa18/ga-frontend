@@ -1,5 +1,5 @@
 import { Breadcrumb, Col, Form, Input, Popconfirm, Row, Skeleton } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ButtonComp,
@@ -9,7 +9,11 @@ import {
   SelectSearchComp,
   TableComp,
 } from "../../components";
-import { createNewlocation, getDataLocation } from "../../redux/action";
+import {
+  createNewlocation,
+  getDataLocation,
+  searchLocation,
+} from "../../redux/action";
 import "./style.less";
 
 const Location = () => {
@@ -94,6 +98,9 @@ const Location = () => {
           icon={"fluent:add-12-regular"}
           nameBtn={"Create New"}
           onClickBtn={() => dispatch({ type: "SET_MODAL", value: true })}
+          onSearch={(e) =>
+            dispatch(searchLocation(e.target.value, locationData))
+          }
         />
         <Gap height={"40px"} />
         {/* Table */}

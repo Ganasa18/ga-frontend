@@ -1,7 +1,5 @@
 import { Breadcrumb, Layout } from "antd";
 import React from "react";
-import { Sidebar } from "../../components";
-const { Content } = Layout;
 
 const Home = () => {
   return (

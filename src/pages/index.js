@@ -7,6 +7,7 @@ import User from "./User";
 import NotFound from "./NotFound";
 import Cars from "./Cars";
 import Location from "./Location";
+import DriverOff from "./DriverOff";
 export {
   LoginPage,
   Home,
@@ -17,4 +18,5 @@ export {
   Cars,
   NotFound,
   Location,
+  DriverOff,
 };

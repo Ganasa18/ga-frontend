@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Table, Tag, Space, Pagination } from "antd";
-import qs from "qs";
-import axios from "axios";
+import React from "react";
+import { Table } from "antd";
+
 import "./style.less";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const TableComp = ({ columns, data, ...restProps }) => {
   const { globalReducer } = useSelector((state) => state);
