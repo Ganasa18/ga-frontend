@@ -1,6 +1,7 @@
 const initLocation = {
   location: [],
   locationName: null,
+  isFilterLocation: false,
 };
 
 export const locationReducer = (state = initLocation, action) => {
@@ -14,6 +15,11 @@ export const locationReducer = (state = initLocation, action) => {
       return {
         ...state,
         locationName: action.value,
+      };
+    case "SET_FILTER_LOCATION":
+      return {
+        ...state,
+        isFilterLocation: action.value,
       };
     default:
       return state;

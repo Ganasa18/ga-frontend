@@ -3,6 +3,7 @@ const initArea = {
   areaCreate: "",
   areaEdit: [],
   searchArea: null,
+  areaSelected: [],
 };
 
 export const areaReducer = (state = initArea, action) => {
@@ -21,6 +22,11 @@ export const areaReducer = (state = initArea, action) => {
       return {
         ...state,
         areaEdit: action.value,
+      };
+    case "SET_AREA_SELECTED":
+      return {
+        ...state,
+        areaSelected: action.value,
       };
     case "SET_AREA_SEARCH":
       return {

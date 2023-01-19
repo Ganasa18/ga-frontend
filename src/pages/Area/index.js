@@ -1,19 +1,9 @@
-import { Breadcrumb, Col, Form, Input, Popconfirm, Row, Skeleton } from "antd";
+import { Breadcrumb, Col, Popconfirm, Row, Skeleton } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  ButtonComp,
-  CardHeader,
-  Gap,
-  ModalComp,
-  TableComp,
-} from "../../components";
-import {
-  createArea,
-  editArea,
-  getDataArea,
-  searchArea,
-} from "../../redux/action/area";
+import { CardHeader, Gap, ModalComp, TableComp } from "../../components";
+import { getDataArea, searchArea } from "../../redux/action/area";
+import { bodyModal, bodyModalEdit } from "./modal";
 import "./style.less";
 
 const Area = () => {
@@ -24,8 +14,9 @@ const Area = () => {
 
   // Edit Modal
   const handleEdit = (key) => {
-    const newData = areaReducer.area.filter((item) => item.id === key);
+    const newData = areaReducer.area.filter((item) => item.key === key);
     setArea(newData);
+    dispatch({ type: "SET_AREA_SELECTED", value: newData[0].area_name });
     dispatch({ type: "SET_AREA_ADD", value: newData[0].area_name });
     dispatch({ type: "SET_MODAL_EDIT", value: true });
   };
@@ -45,7 +36,7 @@ const Area = () => {
         areaReducer.area.length >= 1 ? (
           <Popconfirm
             title="Sure to edit?"
-            onConfirm={() => handleEdit(record.id)}>
+            onConfirm={() => handleEdit(record.key)}>
             <a>Edit</a>
           </Popconfirm>
         ) : null,
@@ -93,7 +84,7 @@ const Area = () => {
           <Col span={24} order={4}>
             {globalReducer.isLoading ? (
               <>
-                {columns.map((index) => (
+                {columns.map(() => (
                   <>
                     <Skeleton.Input
                       active
@@ -128,99 +119,5 @@ const Area = () => {
     </>
   );
 };
-
-// Comp Modal Create
-const bodyModal = (dispatch, valueArea, globalReducer) => (
-  <>
-    <div className="content-wrapper">
-      <Form layout="vertical">
-        <Form.Item label="Area" required>
-          <Input
-            style={{
-              ...(globalReducer.isError?.area_name && {
-                border: "1px solid red",
-              }),
-            }}
-            placeholder="Area Name"
-            onChange={(e) =>
-              dispatch({ type: "SET_AREA_ADD", value: e.target.value })
-            }
-          />
-          {/* Validation */}
-          {globalReducer.isError && (
-            <>
-              <Gap height={"8px"} />
-              <p style={{ marginLeft: "2px", color: "red" }}>
-                {globalReducer.isError?.area_name}
-              </p>
-            </>
-          )}
-        </Form.Item>
-        <Gap height={"80px"} />
-        <div className="button-wrapper">
-          <ButtonComp
-            btnstyle="btn-danger"
-            name="Cancel"
-            style={{ width: "30%" }}
-            onClickBtn={() => dispatch({ type: "SET_MODAL", value: false })}
-          />
-          <Gap width={"80px"} />
-          <ButtonComp
-            name="Submit"
-            style={{ width: "30%" }}
-            onClickBtn={() => dispatch(createArea(valueArea))}
-          />
-        </div>
-      </Form>
-    </div>
-  </>
-);
-
-// Comp Modal Edit
-const bodyModalEdit = (dispatch, area, valueArea, globalReducer) => (
-  <>
-    <div className="content-wrapper">
-      <Form layout="vertical">
-        <Form.Item label="Area" required>
-          <Input
-            style={{
-              ...(globalReducer.isError && { border: "1px solid red" }),
-            }}
-            placeholder="Area Name"
-            value={valueArea}
-            onChange={(e) =>
-              dispatch({ type: "SET_AREA_ADD", value: e.target.value })
-            }
-          />
-          {globalReducer.isError && (
-            <>
-              <Gap height={"8px"} />
-              <p style={{ marginLeft: "2px", color: "red" }}>
-                {globalReducer.isError?.area_name}
-              </p>
-            </>
-          )}
-        </Form.Item>
-        <Gap height={"80px"} />
-        <div className="button-wrapper">
-          <ButtonComp
-            btnstyle="btn-danger"
-            name="Cancel"
-            style={{ width: "30%" }}
-            onClickBtn={() =>
-              dispatch({ type: "SET_MODAL_EDIT", value: false })
-            }
-          />
-          <Gap width={"80px"} />
-          <ButtonComp
-            name="Edit"
-            style={{ width: "30%" }}
-            onClickBtn={() => dispatch(editArea(valueArea, area[0].id))}
-          />
-        </div>
-      </Form>
-    </div>
-  </>
-);
 
 export default Area;

@@ -40,19 +40,6 @@ export const getDataCars = () => async (dispatch) => {
       dispatch({ type: "SET_LOADING", value: false });
       console.log(error);
     });
-
-  // await axios
-  //   .get(URL)
-  //   .then((response) => {
-  //     dispatch({ type: "SET_CARS", value: response.data.data.cars });
-  //     setTimeout(() => {
-  //       dispatch({ type: "SET_LOADING", value: false });
-  //     }, 3000);
-  //   })
-  //   .catch((error) => {
-  //     dispatch({ type: "SET_LOADING", value: false });
-  //     console.log(error);
-  //   });
 };
 
 export const importDataCars = (files) => async (dispatch) => {
@@ -92,7 +79,7 @@ export const searchCar = (value, carData) => async (dispatch) => {
     let searchRequest = filterByValue(carData, value);
     dispatch({ type: "SET_CARS", value: searchRequest });
     dispatch({ type: "SET_LOADING", value: false });
-  }, 3000);
+  }, 1000);
 };
 
 export const filterCar = (area, car, ownership, pool) => async (dispatch) => {
@@ -163,4 +150,12 @@ export const updateActiveCar = (id, value) => async (dispatch) => {
       dispatch({ type: "SET_LOADING", value: false });
       console.log(error);
     });
+};
+
+export const filterNewCar = (value) => async (dispatch) => {
+  // dispatch({ type: "SET_LOADING", value: true });
+  dispatch({ type: "SET_CARS_SEARCH", value: value });
+  // setTimeout(() => {
+  // }, 1000);
+  return;
 };

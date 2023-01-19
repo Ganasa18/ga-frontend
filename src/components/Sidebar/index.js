@@ -30,58 +30,7 @@ const userName = cookies.get("username");
 const userId = cookies.get("user_id");
 const { useBreakpoint } = Grid;
 
-const { Header, Content, Footer, Sider } = Layout;
-
-// const items = [
-//   {
-//     key: 1,
-//     label: "Dashboard",
-//     icon: <IconComponent name={"ant-design:dashboard-filled"} />,
-//     url: "/",
-//   },
-//   {
-//     key: 2,
-//     label: "Report",
-//     icon: <IconComponent name={"ant-design:dashboard-filled"} />,
-//     url: "/report",
-//   },
-//   {
-//     key: 3,
-//     label: "Import Odoo",
-//     icon: <IconComponent name={"bxs:report"} />,
-//     url: "/import-odoo",
-//   },
-//   {
-//     key: 4,
-//     label: "Master Location",
-//     icon: <IconComponent name={"bxs:report"} />,
-//     url: "/location",
-//   },
-//   {
-//     key: 5,
-//     label: "Master Car",
-//     icon: <IconComponent name={"bxs:report"} />,
-//     url: "/cars",
-//   },
-//   {
-//     key: 6,
-//     label: "Master User",
-//     icon: <IconComponent name={"bxs:report"} />,
-//     url: "/users",
-//   },
-//   {
-//     key: 7,
-//     label: "Master Departement",
-//     icon: <IconComponent name={"bxs:report"} />,
-//     url: "/departement",
-//   },
-//   {
-//     key: 8,
-//     label: "Master Area",
-//     icon: <IconComponent name={"bxs:report"} />,
-//     url: "/area",
-//   },
-// ];
+const { Header, Content, Sider } = Layout;
 
 const Sidebar = () => {
   const { globalReducer } = useSelector((state) => state);

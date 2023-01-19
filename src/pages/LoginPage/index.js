@@ -18,7 +18,6 @@ const LoginPage = () => {
 
   const loginSubmit = (e) => {
     e.preventDefault();
-
     if (form.username === "" || form.password === "")
       return MessageComp("Please Fill Form", "warning");
     dispatch(setToken(form));

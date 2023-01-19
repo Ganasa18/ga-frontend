@@ -1,17 +1,48 @@
-import { Breadcrumb, Col, Row, Skeleton } from "antd";
-import React, { useEffect } from "react";
+import { Breadcrumb, Col, Row, Skeleton, Form, Input } from "antd";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { endPoint } from "../../assets/config";
-import { CardHeader, Gap, IconExpand, TableComp } from "../../components";
-import { getDataReport, searchReport } from "../../redux/action";
+// import Select from "react-select";
+import { ActionMeta, OnChangeValue } from "react-select";
+import CreatableSelect from "react-select/creatable";
+import {
+  ButtonComp,
+  CardHeader,
+  Gap,
+  IconExpand,
+  ModalComp,
+  TableComp,
+} from "../../components";
+import {
+  createOrUpdateLocation,
+  getDataLocationReport,
+  getDataReport,
+  searchReport,
+  updateLocationStatus,
+} from "../../redux/action";
 import { callbill, forceDownload } from "../../utils";
 import { NavLink } from "react-router-dom";
 import "./style.less";
+import Select from "react-select";
+import { bodyModal, bodyModalFilter } from "./modal";
 
 const Report = () => {
   const { globalReducer, reportReducer } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const [selectedReport, setSelectedReport] = useState(null);
   const dataReport = reportReducer.report;
+  const selectedLocation = reportReducer.selectedLocation;
+  const optionLocation = reportReducer.optionLocation;
+  const createdLocation = reportReducer.createdLocation;
+  const selectedFromOption = reportReducer.selectedFromOption;
+  const areaOption = reportReducer.reportAreaOption;
+  const areaSelected = reportReducer.reportAreaOptSelected;
+  const departementOption = reportReducer.reportDepartementOption;
+  const departementSelected = reportReducer.reportDepartementOptSelected;
+  const carOption = reportReducer.reportCarsOption;
+  const carSelected = reportReducer.reportCarOptSelected;
+  const dateFrom = reportReducer.selectedDateFrom;
+  const dateTo = reportReducer.selectedDateTo;
 
   const columns = [
     {
@@ -108,6 +139,7 @@ const Report = () => {
 
   useEffect(() => {
     dispatch(getDataReport());
+    dispatch(getDataLocationReport());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -152,7 +184,9 @@ const Report = () => {
         {/* Card Header */}
         <CardHeader
           btnFilter={true}
-          onClickFilter={() => {}}
+          onClickFilter={() => {
+            dispatch({ type: "SET_REPORT_FILTER", value: true });
+          }}
           onSearch={(e) => dispatch(searchReport(e.target.value, dataReport))}
         />
         <Gap height={"15px"} />
@@ -192,22 +226,38 @@ const Report = () => {
                             {record.location != null ? (
                               JSON.parse(record.location).map((item) => (
                                 <>
-                                  <tr
-                                    className={`${
-                                      item.tag === "user" ? "new-location" : ""
-                                    }`}>
-                                    <td>
-                                      <p
-                                        className={`${
-                                          item.tag === "user"
-                                            ? "tag-new-loc"
-                                            : ""
-                                        }`}>
-                                        {item.location}
-                                      </p>
-                                    </td>
-                                    <td>{item.category}</td>
-                                  </tr>
+                                  {item.newLoc === true ? (
+                                    <tr
+                                      key={item.key}
+                                      className={`new-location`}>
+                                      <td>
+                                        <p
+                                          className={`tag-new-loc`}
+                                          onClick={() => {
+                                            setSelectedReport(record?.key);
+                                            dispatch({
+                                              type: "SET_REPORT_LOCATION",
+                                              value: true,
+                                            });
+
+                                            dispatch({
+                                              type: "SET_REPORT_LOCATION_SELECT",
+                                              value: item,
+                                            });
+                                          }}>
+                                          {item.location}
+                                        </p>
+                                      </td>
+                                      <td>{item.category}</td>
+                                    </tr>
+                                  ) : (
+                                    <tr key={item.key}>
+                                      <td>
+                                        <p>{item.location}</p>
+                                      </td>
+                                      <td>{item.category}</td>
+                                    </tr>
+                                  )}
                                 </>
                               ))
                             ) : (
@@ -240,8 +290,118 @@ const Report = () => {
           </Col>
         </Row>
       </div>
+      <ModalComp
+        title="Add to Master Location"
+        show={reportReducer.reportLocation}
+        onClose={() => dispatch({ type: "SET_REPORT_LOCATION", value: false })}
+        content={bodyModal(
+          dispatch,
+          createdLocation,
+          optionLocation,
+          selectedLocation,
+          selectedFromOption,
+          selectedReport
+        )}
+        widthModal="35%"
+      />
+
+      <ModalComp
+        title="Filter Report"
+        show={reportReducer.reportFilter}
+        onClose={() => dispatch({ type: "SET_REPORT_FILTER", value: false })}
+        content={bodyModalFilter(
+          dispatch,
+          areaOption,
+          departementOption,
+          carOption,
+          areaSelected,
+          departementSelected,
+          carSelected,
+          dateFrom,
+          dateTo
+        )}
+        widthModal="30%"
+      />
     </>
   );
 };
+
+// // Comp Modal Edit Location
+// const bodyModal = (
+//   dispatch,
+//   createdLocation,
+//   optionLocation,
+//   selectedLocation,
+//   selectedFromOption,
+//   selectedReport
+// ) => (
+//   <>
+//     <div className="content-wrapper">
+//       <Form layout="vertical">
+//         <Form.Item label="Location">
+//           <Input
+//             placeholder="Location"
+//             defaultValue={`${selectedLocation?.category}`}
+//             disabled
+//           />
+//         </Form.Item>
+//         <Form.Item label="Name 1">
+//           <Input
+//             placeholder="Name 1"
+//             defaultValue={`${selectedLocation?.location}`}
+//             disabled
+//             style={{ backgroundColor: "white", color: "#434343" }}
+//           />
+//         </Form.Item>
+//         <Form.Item label="Name 2">
+//           <CreatableSelect
+//             options={optionLocation}
+//             onChange={(e) => {
+//               // Check if new location
+//               if (e?.__isNew__) {
+//                 console.log(e, "createad");
+//                 dispatch({ type: "SET_SELECTED_OPT_LOCATION", value: e });
+//                 return;
+//               }
+//               // Check if selected location
+//               console.log(e, "selected");
+//               dispatch({ type: "SET_SELECTED_OPT_LOCATION", value: e });
+//             }}
+//             isClearable
+//             onInputChange={(e) => {
+//               dispatch({ type: "SET_REPORT_LOCATION_CREATE", value: e });
+//             }}
+//           />
+//         </Form.Item>
+//         <Gap height={"80px"} />
+//         <div className="button-wrapper">
+//           <ButtonComp
+//             btnstyle="btn-danger"
+//             name="Cancel"
+//             style={{ width: "30%" }}
+//             onClickBtn={() =>
+//               dispatch({ type: "SET_REPORT_LOCATION", value: false })
+//             }
+//           />
+
+//           <Gap width={"80px"} />
+//           <ButtonComp
+//             name="Submit"
+//             style={{ width: "30%" }}
+//             onClickBtn={() => {
+//               dispatch(
+//                 createOrUpdateLocation(
+//                   selectedFromOption,
+//                   selectedReport,
+//                   selectedLocation
+//                 )
+//               );
+//             }}
+//           />
+//         </div>
+//       </Form>
+//     </div>
+//   </>
+// );
 
 export default Report;

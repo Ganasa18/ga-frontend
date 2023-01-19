@@ -1,19 +1,9 @@
-import { Breadcrumb, Col, Form, Input, Popconfirm, Row, Skeleton } from "antd";
+import { Breadcrumb, Col, Row, Skeleton } from "antd";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  ButtonComp,
-  CardHeader,
-  Gap,
-  ModalComp,
-  SelectSearchComp,
-  TableComp,
-} from "../../components";
-import {
-  createNewlocation,
-  getDataLocation,
-  searchLocation,
-} from "../../redux/action";
+import { CardHeader, Gap, ModalComp, TableComp } from "../../components";
+import { getDataLocation, searchLocation } from "../../redux/action";
+import { bodyModal, bodyModalFilter } from "./modal";
 import "./style.less";
 
 const Location = () => {
@@ -22,22 +12,23 @@ const Location = () => {
   const locationData = locationReducer.location;
   const locationName = locationReducer.locationName;
   const valueSelected = globalReducer.selectedValue;
+  const filterSelect = globalReducer.isTagFilter;
 
   const locationType = [
     {
-      value: "Konsumen",
+      value: "konsumen",
       label: "Konsumen",
     },
     {
-      value: "Tempat Berhenti",
+      value: "tempat berhenti",
       label: "Tempat Berhenti",
     },
     {
-      value: "Kantor",
+      value: "kantor",
       label: "Kantor",
     },
     {
-      value: "Rumah",
+      value: "rumah",
       label: "Rumah",
     },
   ];
@@ -49,21 +40,26 @@ const Location = () => {
       dataIndex: "location_name",
     },
     {
+      title: "Name 2",
+      dataIndex: "location_name_rev",
+      width: "35%",
+    },
+    {
       title: "Location",
       dataIndex: "type_location",
       width: "35%",
     },
-    {
-      title: "Action",
-      key: "action",
-      width: "20%",
-      render: (_, record) =>
-        locationData.length >= 1 ? (
-          <Popconfirm title="Sure to edit?" onConfirm={() => {}}>
-            <a>Edit</a>
-          </Popconfirm>
-        ) : null,
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   width: "20%",
+    //   render: (_, record) =>
+    //     locationData.length >= 1 ? (
+    //       <Popconfirm title="Sure to edit?" onConfirm={() => {}}>
+    //         <a>Edit</a>
+    //       </Popconfirm>
+    //     ) : null,
+    // },
   ];
 
   useEffect(() => {
@@ -95,6 +91,9 @@ const Location = () => {
         {/* Card Header */}
         <CardHeader
           btnFilter={true}
+          onClickFilter={() =>
+            dispatch({ type: "SET_FILTER_LOCATION", value: true })
+          }
           icon={"fluent:add-12-regular"}
           nameBtn={"Create New"}
           onClickBtn={() => dispatch({ type: "SET_MODAL", value: true })}
@@ -102,13 +101,17 @@ const Location = () => {
             dispatch(searchLocation(e.target.value, locationData))
           }
         />
+        <Gap height={"15px"} />
+        {filterSelect?.location && (
+          <p>{`Filter for “${filterSelect?.location}”`}</p>
+        )}
         <Gap height={"40px"} />
         {/* Table */}
         <Row>
           <Col span={24} order={4}>
             {globalReducer.isLoading ? (
               <>
-                {columns.map((index) => (
+                {columns.map(() => (
                   <>
                     <Skeleton.Input
                       active
@@ -140,77 +143,16 @@ const Location = () => {
         )}
         widthModal="35%"
       />
+
+      <ModalComp
+        title="Filter Location"
+        show={locationReducer.isFilterLocation}
+        onClose={() => dispatch({ type: "SET_FILTER_LOCATION", value: false })}
+        content={bodyModalFilter(dispatch, locationType, valueSelected)}
+        widthModal="25%"
+      />
     </>
   );
 };
-
-// Comp Modal Create
-const bodyModal = (
-  dispatch,
-  locationType,
-  globalReducer,
-  valueSelected,
-  locationName
-) => (
-  <>
-    <div className="content-wrapper">
-      <Form layout="vertical">
-        <Form.Item label="Location" required>
-          <SelectSearchComp option={locationType} isSearchable={false} />
-          {/* Validation */}
-          {globalReducer.isError && (
-            <>
-              <Gap height={"8px"} />
-              <p style={{ marginLeft: "2px", color: "red" }}>
-                {globalReducer.isError?.type_loc}
-              </p>
-            </>
-          )}
-        </Form.Item>
-        <Gap height={"8px"} />
-        <Form.Item label="Name" required>
-          <Input
-            value={locationName}
-            style={{
-              ...(globalReducer.isError?.location_name && {
-                border: "1px solid red",
-              }),
-            }}
-            onChange={(e) =>
-              dispatch({ type: "SET_LOCATION_NAME", value: e.target.value })
-            }
-            placeholder="Location Name"
-          />
-          {/* Validation */}
-          {globalReducer.isError && (
-            <>
-              <Gap height={"8px"} />
-              <p style={{ marginLeft: "2px", color: "red" }}>
-                {globalReducer.isError?.location_name}
-              </p>
-            </>
-          )}
-        </Form.Item>
-        <Gap height={"80px"} />
-        <div className="button-wrapper">
-          <ButtonComp
-            btnstyle="btn-danger"
-            name="Cancel"
-            style={{ width: "30%" }}
-            onClickBtn={() => dispatch({ type: "SET_MODAL", value: false })}
-          />
-          <Gap width={"80px"} />
-          <ButtonComp
-            name="Submit"
-            style={{ width: "30%" }}
-            onClickBtn={() =>
-              dispatch(createNewlocation(locationName, valueSelected))
-            }
-          />
-        </div>
-      </Form>
-    </div>
-  </>
-);
 
 export default Location;

@@ -3,13 +3,13 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { CardHeader, Gap, TableComp } from "../../components";
-import { getDataReport } from "../../redux/action";
+import { getDataDriverOff } from "../../redux/action";
 import { callbill } from "../../utils";
 
 const DriverOff = () => {
-  const { globalReducer } = useSelector((state) => state);
+  const { globalReducer, reportReducer } = useSelector((state) => state);
   const dispatch = useDispatch();
-  const dataReport = [];
+  const dataReport = reportReducer.driverOff;
 
   const columns = [
     {
@@ -34,10 +34,6 @@ const DriverOff = () => {
       dataIndex: "area",
     },
     {
-      title: "Assent By",
-      dataIndex: "assent",
-    },
-    {
       title: "Remark",
       dataIndex: "remark",
     },
@@ -55,7 +51,7 @@ const DriverOff = () => {
   ];
 
   useEffect(() => {
-    dispatch(getDataReport());
+    dispatch(getDataDriverOff());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -122,7 +118,7 @@ const DriverOff = () => {
                 ))}
               </>
             ) : (
-              <TableComp data={[]} columns={columns} />
+              <TableComp data={dataReport} columns={columns} />
             )}
           </Col>
         </Row>

@@ -78,3 +78,38 @@ export const searchLocation = (value, locationData) => async (dispatch) => {
     dispatch({ type: "SET_LOADING", value: false });
   }, 3000);
 };
+
+export const filterLocation = (selected) => async (dispatch) => {
+  dispatch({ type: "SET_LOADING", value: true });
+  const URL = `${endPoint[0].url}${
+    endPoint[0].port !== "" ? ":" + endPoint[0].port : ""
+  }/api/v1/location/filter`;
+  await axios
+    .get(URL, {
+      params: {
+        type_location: selected?.value,
+      },
+    })
+    .then((response) => {
+      dispatch({ type: "SET_LOCATION", value: response.data.data.locations });
+      dispatch({ type: "SET_FILTER_LOCATION", value: false });
+      if (!selected) {
+        dispatch({
+          type: "SET_TAG_FILTER",
+          value: null,
+        });
+      } else {
+        dispatch({
+          type: "SET_TAG_FILTER",
+          value: { location: selected.label },
+        });
+      }
+      setTimeout(() => {
+        dispatch({ type: "SET_LOADING", value: false });
+      }, 3000);
+    })
+    .catch((error) => {
+      dispatch({ type: "SET_LOADING", value: false });
+      console.log(error);
+    });
+};

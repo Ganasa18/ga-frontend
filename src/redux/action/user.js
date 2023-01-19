@@ -1,6 +1,7 @@
 import axios from "axios";
 import { endPoint } from "../../assets/config";
 import { MessageComp } from "../../components";
+import { axiosFunc, axiosFuncMoreThanOne } from "../../lib/AxiosFunc";
 import filterByValue from "../../utils/useFilter";
 
 // Get Data
@@ -23,111 +24,109 @@ export const getDataUsers = () => async (dispatch) => {
     endPoint[0].port !== "" ? ":" + endPoint[0].port : ""
   }/api/v1/cars/`;
 
-  const requestOne = await axios.get(URL_USER);
-  const requestTwo = await axios.get(URL_AREA);
-  const requestThree = await axios.get(URL_DPT);
-  const requestFour = await axios.get(URL_CARS);
+  const requestOne = await axiosFunc("get", URL_USER);
+  const requestTwo = await axiosFunc("get", URL_AREA);
+  const requestThree = await axiosFunc("get", URL_DPT);
+  const requestFour = await axiosFunc("get", URL_CARS);
 
-  axios
-    .all([requestOne, requestTwo, requestThree, requestFour])
-    .then(
-      axios.spread((...responses) => {
-        const responseOne = responses[0];
-        const responseTwo = responses[1];
-        const responseThree = responses[2];
-        const responseFour = responses[3];
+  const arrayData = [requestOne, requestTwo, requestThree, requestFour];
 
-        let newDataUser = responseOne.data.data.users;
-        let newDataArea = responseTwo.data.data.areas;
-        let newDataDepartement = responseThree.data.data.departements;
-        let newDataCar = responseFour.data.data.cars;
+  const getAll = await axiosFuncMoreThanOne(arrayData);
 
-        newDataUser = newDataUser.map((item) => ({
-          key: item.id,
-          uuid: item.uuid,
-          username: item.username,
-          firstName: item.firstName,
-          lastName: item.lastName,
-          phoneNumber: item.phoneNumber,
-          address: item.address,
-          area: item.area,
-          area_name: item.area_name,
-          departement: item.departement,
-          model_vehicle: item.model_vehicle,
-          role: item.role,
-          plate_car: item.plate_car,
-          departement_name: item.departement_name,
-          car_1: item.car_1,
-          car_2: item.car_2,
-          car_3: item.car_3,
-        }));
+  // Error Handling
+  if (
+    requestOne.status !== 200 ||
+    requestTwo.status !== 200 ||
+    requestThree.status !== 200 ||
+    requestFour.status !== 200
+  ) {
+    MessageComp("Something went wrong", "warning");
+    return;
+  }
 
-        const newArr1 = newDataArea.map((item) => ({
-          value: item.id,
-          label: item.area_name,
-        }));
+  let newDataUser = getAll[0].data.data.users;
+  let newDataArea = getAll[1].data.data.areas;
+  let newDataDepartement = getAll[2].data.data.departements;
+  let newDataCar = getAll[3].data.data.cars;
 
-        let newArr2 = newDataDepartement.map((item) => ({
-          value: item.departement_name,
-          label: item.departement_name,
-        }));
+  newDataUser = newDataUser.map((item) => ({
+    key: item.id,
+    uuid: item.uuid,
+    username: item.username,
+    firstName: item.firstName,
+    lastName: item.lastName,
+    phoneNumber: item.phoneNumber,
+    address: item.address,
+    area: item.area,
+    area_name: item.area_name,
+    departement: item.departement,
+    model_vehicle: item.model_vehicle,
+    role: item.role,
+    plate_car: item.plate_car,
+    departement_name: item.departement_name,
+    car_1: item.car_1,
+    car_2: item.car_2,
+    car_3: item.car_3,
+  }));
 
-        newArr2 = newArr2.filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.value === value.value && t.label === value.label
-            )
-        );
+  const newArr1 = newDataArea.map((item) => ({
+    value: item.id,
+    label: item.area_name,
+  }));
 
-        const newArr3 = newDataCar.map((item) => ({
-          value: item.license_plate,
-          label: item.license_plate + " / " + item.model_vehicle,
-          pull_or_takehome: item.pull_or_takehome,
-          ownership: item.ownership,
-        }));
+  let newArr2 = newDataDepartement.map((item) => ({
+    value: item.departement_name,
+    label: item.departement_name,
+  }));
 
-        const newArr4 = newDataCar.map((item) => ({
-          value: item.license_plate,
-          label: item.license_plate + " / " + item.model_vehicle,
-          model_vehicle: item.model_vehicle,
-        }));
+  newArr2 = newArr2.filter(
+    (value, index, self) =>
+      index ===
+      self.findIndex((t) => t.value === value.value && t.label === value.label)
+  );
 
-        dispatch({
-          type: "SET_USERS",
-          value: newDataUser,
-        });
-        dispatch({
-          type: "SET_USERS_AREA_OPT",
-          value: newArr1,
-        });
-        dispatch({
-          type: "SET_USERS_DEPART",
-          value: newDataDepartement,
-        });
-        dispatch({
-          type: "SET_USERS_CARS_OPT",
-          value: newArr3,
-        });
-        dispatch({
-          type: "SET_USERS_CARS_OPT_2",
-          value: newArr4,
-        });
+  const newArr3 = newDataCar.map((item) => ({
+    value: item.license_plate,
+    label: item.license_plate + " / " + item.model_vehicle,
+    pull_or_takehome: item.pull_or_takehome,
+    ownership: item.ownership,
+  }));
 
-        dispatch({
-          type: "SET_USERS_DEPART_FILTER",
-          value: newArr2,
-        });
+  const newArr4 = newDataCar.map((item) => ({
+    value: item.license_plate,
+    label: item.license_plate + " / " + item.model_vehicle,
+    model_vehicle: item.model_vehicle,
+  }));
 
-        setTimeout(() => {
-          dispatch({ type: "SET_LOADING", value: false });
-        }, 3000);
-      })
-    )
-    .catch((error) => {
-      dispatch({ type: "SET_LOADING", value: false });
-      console.log(error);
-    });
+  dispatch({
+    type: "SET_USERS",
+    value: newDataUser,
+  });
+  dispatch({
+    type: "SET_USERS_AREA_OPT",
+    value: newArr1,
+  });
+  dispatch({
+    type: "SET_USERS_DEPART",
+    value: newDataDepartement,
+  });
+  dispatch({
+    type: "SET_USERS_CARS_OPT",
+    value: newArr3,
+  });
+  dispatch({
+    type: "SET_USERS_CARS_OPT_2",
+    value: newArr4,
+  });
+
+  dispatch({
+    type: "SET_USERS_DEPART_FILTER",
+    value: newArr2,
+  });
+
+  setTimeout(() => {
+    dispatch({ type: "SET_LOADING", value: false });
+  }, 3000);
 };
 
 // Get Data

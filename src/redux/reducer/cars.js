@@ -6,6 +6,7 @@ const initCars = {
   isModalCarActive: false,
   isModalCarFilter: false,
   isLocationOdoo: null,
+  carsSearch: null,
 };
 
 export const carsReducer = (state = initCars, action) => {
@@ -44,6 +45,11 @@ export const carsReducer = (state = initCars, action) => {
       return {
         ...state,
         isLocationOdoo: action.value,
+      };
+    case "SET_CARS_SEARCH":
+      return {
+        ...state,
+        carsSearch: action.value,
       };
     default:
       return state;
